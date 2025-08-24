@@ -67,7 +67,12 @@ const folders: Array<{
   },
 ]
 
-const filters = [
+const filters: Array<{
+  id: EmailFilter
+  name: string
+  icon: any
+  count?: number
+}> = [
   {
     id: "all",
     name: "All",
