@@ -19,9 +19,11 @@ import {
   Clock,
 } from "lucide-react"
 
+import type { EmailView } from "@/app/(dashboard)/dashboard/email/page"
+
 interface EmailSidebarProps {
-  view: string
-  onViewChange: (view: string) => void
+  view: EmailView
+  onViewChange: (view: EmailView) => void
   filter: string
   onFilterChange: (filter: string) => void
 }
