@@ -31,7 +31,7 @@ export function TradeDashboard() {
           changeLabel="from last month"
           icon={Users}
           loading={loading}
-          error={error}
+          error={error?.message}
         />
         <KPICard
           title="Active Events"
@@ -40,7 +40,7 @@ export function TradeDashboard() {
           changeLabel="from last month"
           icon={Calendar}
           loading={loading}
-          error={error}
+          error={error?.message}
         />
         <KPICard
           title="Revenue"
@@ -49,7 +49,7 @@ export function TradeDashboard() {
           changeLabel="from last month"
           icon={DollarSign}
           loading={loading}
-          error={error}
+          error={error?.message}
         />
         <KPICard
           title="Active Campaigns"
@@ -58,7 +58,7 @@ export function TradeDashboard() {
           changeLabel="from last month"
           icon={Target}
           loading={loading}
-          error={error}
+          error={error?.message}
         />
       </div>
 
