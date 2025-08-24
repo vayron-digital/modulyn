@@ -20,12 +20,13 @@ import {
 } from "lucide-react"
 
 import type { EmailView } from "@/app/(dashboard)/dashboard/email/page"
+type EmailFilter = "all" | "unread" | "flagged" | "attachments"
 
 interface EmailSidebarProps {
   view: EmailView
   onViewChange: (view: EmailView) => void
-  filter: string
-  onFilterChange: (filter: string) => void
+  filter: EmailFilter
+  onFilterChange: (filter: EmailFilter) => void
 }
 
 // This would normally come from an API
