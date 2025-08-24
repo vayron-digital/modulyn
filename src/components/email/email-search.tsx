@@ -26,24 +26,44 @@ import {
   Filter,
 } from "lucide-react"
 
+type BaseSearchItem = {
+  id: string
+  label: string
+}
+
+type CommonSearchItem = BaseSearchItem & {
+  type: 'common'
+  filter: string
+}
+
+type OperatorItem = BaseSearchItem & {
+  type: 'operator'
+  description: string
+}
+
+type SearchGroup = {
+  group: string
+  items: (CommonSearchItem | OperatorItem)[]
+}
+
 // This would normally come from an API
-const searchSuggestions = [
+const searchSuggestions: SearchGroup[] = [
   {
     group: "Common Searches",
     items: [
-      { id: "1", label: "Unread emails", filter: "is:unread" },
-      { id: "2", label: "Emails with attachments", filter: "has:attachment" },
-      { id: "3", label: "Starred emails", filter: "is:starred" },
-      { id: "4", label: "Recent emails", filter: "newer_than:7d" },
+      { id: "1", type: "common", label: "Unread emails", filter: "is:unread" },
+      { id: "2", type: "common", label: "Emails with attachments", filter: "has:attachment" },
+      { id: "3", type: "common", label: "Starred emails", filter: "is:starred" },
+      { id: "4", type: "common", label: "Recent emails", filter: "newer_than:7d" },
     ],
   },
   {
     group: "Search Operators",
     items: [
-      { id: "5", label: "from:[email]", description: "Emails from a sender" },
-      { id: "6", label: "to:[email]", description: "Emails to a recipient" },
-      { id: "7", label: "subject:[text]", description: "Search in subject" },
-      { id: "8", label: "has:attachment", description: "With attachments" },
+      { id: "5", type: "operator", label: "from:[email]", description: "Emails from a sender" },
+      { id: "6", type: "operator", label: "to:[email]", description: "Emails to a recipient" },
+      { id: "7", type: "operator", label: "subject:[text]", description: "Search in subject" },
+      { id: "8", type: "operator", label: "has:attachment", description: "With attachments" },
     ],
   },
 ]
@@ -78,12 +98,14 @@ export function EmailSearch() {
                     <CommandItem
                       key={item.id}
                       onSelect={() => {
-                        setSearch(item.filter)
+                        // Use filter for common searches, label for operator items
+                        const searchValue = item.type === 'common' ? item.filter : item.label
+                        setSearch(searchValue)
                         setOpen(false)
                       }}
                     >
                       {item.label}
-                      {item.description && (
+                      {'description' in item && (
                         <span className="ml-2 text-sm text-muted-foreground">
                           {item.description}
                         </span>
