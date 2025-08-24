@@ -21,8 +21,8 @@ import {
 } from "@/components/ui/dialog"
 import { Plus } from "lucide-react"
 
-type EmailView = "inbox" | "sent" | "drafts" | "trash" | "spam"
-type EmailFilter = "all" | "unread" | "flagged" | "attachments"
+export type EmailView = "inbox" | "sent" | "drafts" | "trash" | "spam"
+export type EmailFilter = "all" | "unread" | "flagged" | "attachments"
 
 export default function EmailPage() {
   const [view, setView] = useState<EmailView>("inbox")

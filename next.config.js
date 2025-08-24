@@ -12,10 +12,6 @@ const nextConfig = {
   experimental: {
     // Enable optimistic updates
     optimisticClientCache: true,
-    // Enable server actions for faster data mutations
-    serverActions: true,
-    // Enable concurrent features
-    concurrent: true,
   },
 }
 

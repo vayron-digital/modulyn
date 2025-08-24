@@ -3,11 +3,11 @@
 // =====================================================
 
 import { NextRequest, NextResponse } from 'next/server'
-import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs'
+import { createRouteHandlerClient } from '@/lib/supabase/server'
 import { cookies } from 'next/headers'
 import type { NotificationSettingUpdate } from '@/types/settings'
 
-const supabase = createRouteHandlerClient({ cookies })
+const supabase = createRouteHandlerClient()
 
 // =====================================================
 // GET NOTIFICATION SETTINGS
