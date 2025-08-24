@@ -1,4 +1,8 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from         id: subscription.id,
+        status: subscription.status,
+        currentPeriodStart: subscription.start_date,
+        currentPeriodEnd: subscription.ended_at,
+        cancelAtPeriodEnd: subscription.cancel_at_period_end,/server'
 import { z } from 'zod'
 import Stripe from 'stripe'
 import {
@@ -42,8 +46,10 @@ export async function GET(request: NextRequest) {
       data: {
         id: subscription.id,
         status: subscription.status,
-        currentPeriodStart: subscription.current_period_start?.getTime(),
-        currentPeriodEnd: subscription.current_period_end?.getTime(),
+        // Use billing_cycle_anchor as the period start since it represents when billing periods begin
+        currentPeriodStart: new Date(subscription.billing_cycle_anchor * 1000).getTime(),
+        // Use cancel_at as period end if it exists, otherwise undefined
+        currentPeriodEnd: subscription.cancel_at ? new Date(subscription.cancel_at * 1000).getTime() : undefined,
         cancelAtPeriodEnd: subscription.cancel_at_period_end,
         customer: {
           id: subscription.customer,
