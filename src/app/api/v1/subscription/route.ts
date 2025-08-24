@@ -28,7 +28,7 @@ export async function GET(request: NextRequest) {
     const validatedData = subscriptionIdSchema.parse({ subscriptionId })
 
     // Get subscription details
-    const subscription = await getSubscriptionDetails(validatedData.subscriptionId) as Stripe.Response<Stripe.Subscription>
+    const subscription = await getSubscriptionDetails(validatedData.subscriptionId) as Stripe.Subscription
 
     if (!subscription) {
       return NextResponse.json(
@@ -42,8 +42,8 @@ export async function GET(request: NextRequest) {
       data: {
         id: subscription.id,
         status: subscription.status,
-        currentPeriodStart: subscription.current_period_end,
-        currentPeriodEnd: subscription.current_period_end,
+        currentPeriodStart: subscription.current_period_start?.getTime(),
+        currentPeriodEnd: subscription.current_period_end?.getTime(),
         cancelAtPeriodEnd: subscription.cancel_at_period_end,
         customer: {
           id: subscription.customer,
@@ -60,7 +60,7 @@ export async function GET(request: NextRequest) {
             recurring: item.price.recurring,
           },
         })),
-        discount: subscription.discount,
+        discounts: subscription.discounts,
         totalAmount: subscription.items.data.reduce((total: number, item: Stripe.SubscriptionItem) => {
           return total + (item.price.unit_amount || 0) * (item.quantity || 1)
         }, 0),
