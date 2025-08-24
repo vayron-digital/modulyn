@@ -45,10 +45,12 @@ import {
   Settings,
 } from "lucide-react"
 
+import type { EmailFilter } from "@/app/(dashboard)/dashboard/email/page"
+
 interface EmailToolbarProps {
   view: string
-  filter: string
-  onFilterChange: (filter: string) => void
+  filter: EmailFilter
+  onFilterChange: (filter: EmailFilter) => void
 }
 
 export function EmailToolbar({
