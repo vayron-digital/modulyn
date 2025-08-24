@@ -12,6 +12,7 @@ interface MemberProfileProps {
   id: string
 }
 
+export function MemberProfile({ id }: MemberProfileProps) {
   const { members, isLoading, error } = useMembers()
   const member = members?.find((m: any) => m.id === id)
 
@@ -100,7 +101,7 @@ interface MemberProfileProps {
           <div>
             <h4 className="mb-2 font-medium">Specializations</h4>
             <div className="flex flex-wrap gap-2">
-              {member.specializations.map((spec) => (
+              {member.specializations.map((spec: string) => (
                 <Badge key={spec} variant="secondary">
                   {spec}
                 </Badge>
@@ -110,7 +111,7 @@ interface MemberProfileProps {
           <div>
             <h4 className="mb-2 font-medium">Committee Memberships</h4>
             <div className="flex flex-wrap gap-2">
-              {member.committees.map((committee) => (
+              {member.committees.map((committee: string) => (
                 <Badge key={committee} variant="outline">
                   {committee}
                 </Badge>
