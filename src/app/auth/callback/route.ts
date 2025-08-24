@@ -5,9 +5,11 @@ import { NextResponse } from 'next/server'
 export const dynamic = 'force-dynamic'
 
 export async function GET(request: Request) {
+  // Parse URL outside try-catch so it's available in catch block
+  const requestUrl = new URL(request.url)
+
   try {
     console.log('Auth callback started')
-    const requestUrl = new URL(request.url)
     const code = requestUrl.searchParams.get('code')
     const error = requestUrl.searchParams.get('error')
     const error_description = requestUrl.searchParams.get('error_description')
