@@ -136,7 +136,7 @@ export function EmailSidebar({
             >
               <folder.icon className="mr-2 h-4 w-4" />
               {folder.name}
-              {folder.count > 0 && (
+              {folder.count !== undefined && folder.count > 0 && (
                 <Badge
                   variant="secondary"
                   className="ml-auto flex h-6 w-6 items-center justify-center rounded-full"
