@@ -30,7 +30,7 @@ export default function DashboardLayout({
             </main>
           </div>
         </div>
-        <SettingsDebug />
+        {/* <SettingsDebug /> */}
       </NavigationWrapper>
     </Providers>
   )

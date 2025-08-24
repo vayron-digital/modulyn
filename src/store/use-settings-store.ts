@@ -23,6 +23,9 @@ interface SettingsState {
   language: string
   currency: string
   
+  // Selector functions
+  getUserMode: () => UserMode
+  
   // Subscription and Access Control
   subscriptionPlan?: SubscriptionPlan
   accessPermissions: SolutionAccess[]

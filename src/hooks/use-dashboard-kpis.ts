@@ -3,7 +3,7 @@ import { getTradeDashboardKPIs, getCRMDashboardKPIs } from '@/services/dashboard
 import { useSettingsUserMode } from '@/store/use-settings-store'
 
 export function useDashboardKPIs() {
-  const userMode = useSettingsUserMode()
+  const { userMode } = useSettingsUserMode()
 
   const {
     data: tradeKPIs,
@@ -45,12 +45,14 @@ export function useDashboardKPIs() {
       activeCampaignsChange: 0,
     },
     crmKPIs: crmKPIs || {
-      totalLeads: 0,
-      totalLeadsChange: 0,
-      activeDeals: 0,
-      activeDealsChange: 0,
-      revenue: 0,
-      revenueChange: 0,
+      activeListings: 0,
+      activeListingsChange: 0,
+      activeLeads: 0,
+      activeLeadsChange: 0,
+      dealsValue: 0,
+      dealsValueChange: 0,
+      tasksDue: 0,
+      tasksDueChange: 0,
       activeClients: 0,
       activeClientsChange: 0,
       conversionRate: 0,

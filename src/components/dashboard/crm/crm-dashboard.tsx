@@ -40,10 +40,10 @@ export function CRMDashboard() {
           title="Active Listings"
           value={kpis?.activeListings || '0'}
           change={kpis?.activeListingsChange}
-          changeLabel="new this month"
+          changeLabel="from last month"
           icon={Home}
           loading={loading}
-          error={error}
+          error={error?.message}
         />
         <KPICard
           title="Active Leads"
@@ -52,7 +52,7 @@ export function CRMDashboard() {
           changeLabel="from last month"
           icon={Target}
           loading={loading}
-          error={error}
+          error={error?.message}
         />
         <KPICard
           title="Deals Value"
@@ -61,16 +61,16 @@ export function CRMDashboard() {
           changeLabel="from last month"
           icon={DollarSign}
           loading={loading}
-          error={error}
+          error={error?.message}
         />
         <KPICard
           title="Tasks Due"
           value={kpis?.tasksDue || '0'}
           change={kpis?.tasksDueChange}
-          changeLabel="from last week"
+          changeLabel="this week"
           icon={Calendar}
           loading={loading}
-          error={error}
+          error={error?.message}
         />
         <KPICard
           title="Active Clients"
@@ -79,7 +79,7 @@ export function CRMDashboard() {
           changeLabel="from last month"
           icon={Users}
           loading={loading}
-          error={error}
+          error={error?.message}
         />
         <KPICard
           title="Conversion Rate"
@@ -88,7 +88,7 @@ export function CRMDashboard() {
           changeLabel="from last month"
           icon={TrendingUp}
           loading={loading}
-          error={error}
+          error={error?.message}
         />
       </div>
 
