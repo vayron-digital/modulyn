@@ -1,8 +1,4 @@
-import { NextRequest, NextResponse } from         id: subscription.id,
-        status: subscription.status,
-        currentPeriodStart: subscription.start_date,
-        currentPeriodEnd: subscription.ended_at,
-        cancelAtPeriodEnd: subscription.cancel_at_period_end,/server'
+import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import Stripe from 'stripe'
 import {
