@@ -53,7 +53,7 @@ export async function POST(request: NextRequest) {
         subscriptionId,
         newQuantity,
         subscriptionStatus: updatedSubscription.status,
-        currentPeriodEnd: updatedSubscription.current_period_end,
+        currentPeriodEnd: updatedSubscription.cancel_at ? new Date(updatedSubscription.cancel_at * 1000).getTime() : undefined,
         quantity: updatedSubscriptionItem.quantity,
         totalAmount: updatedSubscriptionItem.amount_total,
       },
