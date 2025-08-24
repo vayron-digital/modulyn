@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { EmailSidebar } from "@/components/email/email-sidebar"
 import { EmailList } from "@/components/email/email-list"
-import { EmailView } from "@/components/email/email-view"
+import { EmailView as EmailViewComponent } from "@/components/email/email-view"
 import { EmailCompose } from "@/components/email/email-compose"
 import { EmailSearch } from "@/components/email/email-search"
 import { EmailToolbar } from "@/components/email/email-toolbar"
@@ -21,8 +21,7 @@ import {
 } from "@/components/ui/dialog"
 import { Plus } from "lucide-react"
 
-export type EmailView = "inbox" | "sent" | "drafts" | "trash" | "spam"
-export type EmailFilter = "all" | "unread" | "flagged" | "attachments"
+import type { EmailView, EmailFilter } from "@/types/email"
 
 export default function EmailPage() {
   const [view, setView] = useState<EmailView>("inbox")
@@ -140,7 +139,7 @@ export default function EmailPage() {
           </div>
           {selectedEmail && (
             <div className="flex-1">
-              <EmailView
+              <EmailViewComponent
                 emailId={selectedEmail}
                 onClose={() => setSelectedEmail(null)}
               />

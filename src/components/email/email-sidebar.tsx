@@ -19,8 +19,7 @@ import {
   Clock,
 } from "lucide-react"
 
-import type { EmailView } from "@/app/(dashboard)/dashboard/email/page"
-type EmailFilter = "all" | "unread" | "flagged" | "attachments"
+import type { EmailView, EmailFilter } from "@/types/email"
 
 interface EmailSidebarProps {
   view: EmailView
@@ -30,7 +29,12 @@ interface EmailSidebarProps {
 }
 
 // This would normally come from an API
-const folders = [
+const folders: Array<{
+  id: EmailView
+  name: string
+  icon: any
+  count?: number
+}> = [
   {
     id: "inbox",
     name: "Inbox",
