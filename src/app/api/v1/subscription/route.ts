@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
+import Stripe from 'stripe'
 import {
   getSubscriptionDetails,
   cancelSubscription,
@@ -27,7 +28,7 @@ export async function GET(request: NextRequest) {
     const validatedData = subscriptionIdSchema.parse({ subscriptionId })
 
     // Get subscription details
-    const subscription = await getSubscriptionDetails(validatedData.subscriptionId)
+    const subscription = await getSubscriptionDetails(validatedData.subscriptionId) as Stripe.Response<Stripe.Subscription>
 
     if (!subscription) {
       return NextResponse.json(
@@ -41,27 +42,27 @@ export async function GET(request: NextRequest) {
       data: {
         id: subscription.id,
         status: subscription.status,
-        currentPeriodStart: subscription.current_period_start,
+        currentPeriodStart: subscription.current_period_end,
         currentPeriodEnd: subscription.current_period_end,
         cancelAtPeriodEnd: subscription.cancel_at_period_end,
         customer: {
           id: subscription.customer,
-          email: (subscription.customer as any)?.email,
-          name: (subscription.customer as any)?.name,
+          email: typeof subscription.customer === 'object' ? (subscription.customer as Stripe.Customer).email : undefined,
+          name: typeof subscription.customer === 'object' ? (subscription.customer as Stripe.Customer).name : undefined,
         },
-        items: subscription.items.data.map(item => ({
+        items: subscription.items.data.map((item: Stripe.SubscriptionItem) => ({
           id: item.id,
           quantity: item.quantity,
           price: {
             id: item.price.id,
-            unitAmount: (item.price as any)?.unit_amount,
-            currency: (item.price as any)?.currency,
-            recurring: (item.price as any)?.recurring,
+            unitAmount: item.price.unit_amount,
+            currency: item.price.currency,
+            recurring: item.price.recurring,
           },
         })),
         discount: subscription.discount,
-        totalAmount: subscription.items.data.reduce((total, item) => {
-          return total + ((item.price as any)?.unit_amount || 0) * item.quantity
+        totalAmount: subscription.items.data.reduce((total: number, item: Stripe.SubscriptionItem) => {
+          return total + (item.price.unit_amount || 0) * (item.quantity || 1)
         }, 0),
       },
     })
