@@ -48,17 +48,17 @@ export default function DealPage() {
         </TabsContent>
         <TabsContent value="tasks">
           <Card>
-            <DealTasks id={params.id as string} />
+            <DealTasks />
           </Card>
         </TabsContent>
         <TabsContent value="documents">
           <Card>
-            <DealDocuments id={params.id as string} />
+            <DealDocuments />
           </Card>
         </TabsContent>
         <TabsContent value="notes">
           <Card>
-            <DealNotes id={params.id as string} />
+            <DealNotes />
           </Card>
         </TabsContent>
       </Tabs>

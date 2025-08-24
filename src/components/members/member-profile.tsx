@@ -1,6 +1,6 @@
 "use client"
 
-import { useMember } from "@/hooks/use-members"
+import { useMembers } from "@/hooks/use-members"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
@@ -12,8 +12,8 @@ interface MemberProfileProps {
   id: string
 }
 
-export function MemberProfile({ id }: MemberProfileProps) {
-  const { data: member, isLoading, error } = useMember(id)
+  const { members, isLoading, error } = useMembers()
+  const member = members?.find((m: any) => m.id === id)
 
   if (isLoading) {
     return <div>Loading...</div>
