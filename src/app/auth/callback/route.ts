@@ -91,12 +91,13 @@ export async function GET(request: Request) {
         // Create response with redirect
         const response = NextResponse.redirect(`${origin}/dashboard`)
 
+        // Get or create profile with retry logic
+        let profile = null
+        let profileError = null
+        let retryCount = 0
+        const maxRetries = 3
+        
         try {
-          // Get or create profile with retry logic
-          let profile = null
-          let profileError = null
-          let retryCount = 0
-          const maxRetries = 3
           
           while (retryCount < maxRetries) {
             try {
