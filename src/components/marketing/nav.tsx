@@ -67,7 +67,7 @@ export function Nav() {
               <span className="sr-only">Your Company</span>
               <div className="relative h-8 w-32">
                 <Image
-                  src="/logo.svg"
+                  src="/logo-red-bg.png"
                   alt="Logo"
                   fill
                   className="object-contain"
@@ -252,7 +252,7 @@ export function Nav() {
                   <span className="sr-only">Your Company</span>
                   <div className="relative h-8 w-32">
                     <Image
-                      src="/logo.svg"
+                      src="/logo-red-bg.png"
                       alt="Logo"
                       fill
                       className="object-contain"

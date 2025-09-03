@@ -1,12 +1,13 @@
 "use client"
 
-import { useState } from "react"
-import { useRouter } from "next/navigation"
+import { useState, useEffect } from "react"
+import { useRouter, useSearchParams } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Alert, AlertDescription } from "@/components/ui/alert"
+import { Separator } from "@/components/ui/separator"
 import { cn } from "@/lib/utils"
 import {
   Eye,
@@ -20,6 +21,9 @@ import Link from "next/link"
 import { useStripe } from "@/hooks/use-stripe"
 import { StripeProvider } from "@/components/stripe/stripe-provider"
 import { PaymentForm } from "@/components/stripe/payment-form"
+import { signInWithGoogle } from "@/lib/supabase"
+import { Icons } from "@/components/ui/icons"
+import { toast } from "sonner"
 
 interface SignupFormProps {
   selectedPlan?: {
@@ -63,6 +67,7 @@ export function SignupForm({
   className,
 }: SignupFormProps) {
   const router = useRouter()
+  const searchParams = useSearchParams()
   const { createSubscription, isLoading: stripeLoading, error: stripeError } = useStripe()
   
   const [formData, setFormData] = useState<FormData>({
@@ -77,11 +82,24 @@ export function SignupForm({
   })
   const [errors, setErrors] = useState<FormErrors>({})
   const [isLoading, setIsLoading] = useState(false)
+  const [isGoogleLoading, setIsGoogleLoading] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [isSuccess, setIsSuccess] = useState(false)
   const [showPaymentForm, setShowPaymentForm] = useState(false)
   const [clientSecret, setClientSecret] = useState<string | null>(null)
+
+  // Check for auth callback errors
+  useEffect(() => {
+    const error = searchParams.get('error')
+    if (error) {
+      setErrors({ general: decodeURIComponent(error) })
+      // Clear the error from URL
+      const newUrl = new URL(window.location.href)
+      newUrl.searchParams.delete('error')
+      window.history.replaceState({}, '', newUrl.toString())
+    }
+  }, [searchParams])
 
   const validateForm = (): boolean => {
     const newErrors: FormErrors = {}
@@ -164,6 +182,54 @@ export function SignupForm({
 
     // Show payment form
     setShowPaymentForm(true)
+  }
+
+  const handleGoogleSignUp = async () => {
+    if (!formData.agreeToTerms) {
+      setErrors({ agreeToTerms: "You must agree to the terms and conditions" })
+      toast.error("Please agree to the terms and conditions first")
+      return
+    }
+
+    setIsGoogleLoading(true)
+    setErrors({})
+    
+    try {
+      const { data, error } = await signInWithGoogle()
+      
+      if (error) {
+        console.error('Google sign-up error:', error)
+        throw error
+      }
+      
+      console.log('Google sign-up response:', data)
+      
+      // Show success message before redirect
+      toast.success('Redirecting to Google...')
+      
+      // The redirect will happen automatically via the OAuth flow
+      // User will be redirected back to auth/callback and then to dashboard
+      
+    } catch (error: any) {
+      console.error('Full error:', error)
+      
+      // Enhanced error handling
+      let errorMessage = error.message || 'Error signing up with Google'
+      
+      // Handle specific error types
+      if (errorMessage.includes('popup')) {
+        errorMessage = 'Popup blocked! Please allow popups for this site and try again.'
+      } else if (errorMessage.includes('network')) {
+        errorMessage = 'Network error! Please check your internet connection and try again.'
+      } else if (errorMessage.includes('timeout')) {
+        errorMessage = 'Request timed out! Please try again.'
+      }
+      
+      setErrors({ general: errorMessage })
+      toast.error(errorMessage)
+    } finally {
+      setIsGoogleLoading(false)
+    }
   }
 
   const handlePaymentSubmit = async (paymentMethodId: string) => {
@@ -259,7 +325,7 @@ export function SignupForm({
   }
 
   return (
-    <form onSubmit={handleSubmit} className={cn("space-y-6", className)}>
+    <div className={cn("space-y-6", className)}>
       {/* General Error */}
       {errors.general && (
         <Alert variant="destructive">
@@ -268,217 +334,258 @@ export function SignupForm({
         </Alert>
       )}
 
-      {/* Name Fields */}
-      <div className="grid gap-4 sm:grid-cols-2">
-        <div className="space-y-2">
-          <Label htmlFor="firstName">First Name *</Label>
-          <Input
-            id="firstName"
-            type="text"
-            value={formData.firstName}
-            onChange={(e) => handleInputChange("firstName", e.target.value)}
-            className={cn(
-              errors.firstName && "border-red-500 focus:border-red-500 focus:ring-red-500"
-            )}
-            placeholder="Enter your first name"
-          />
-          {errors.firstName && (
-            <p className="text-sm text-red-600">{errors.firstName}</p>
-          )}
-        </div>
-
-        <div className="space-y-2">
-          <Label htmlFor="lastName">Last Name *</Label>
-          <Input
-            id="lastName"
-            type="text"
-            value={formData.lastName}
-            onChange={(e) => handleInputChange("lastName", e.target.value)}
-            className={cn(
-              errors.lastName && "border-red-500 focus:border-red-500 focus:ring-red-500"
-            )}
-            placeholder="Enter your last name"
-          />
-          {errors.lastName && (
-            <p className="text-sm text-red-600">{errors.lastName}</p>
-          )}
-        </div>
-      </div>
-
-      {/* Email */}
-      <div className="space-y-2">
-        <Label htmlFor="email">Email Address *</Label>
-        <Input
-          id="email"
-          type="email"
-          value={formData.email}
-          onChange={(e) => handleInputChange("email", e.target.value)}
-          className={cn(
-            errors.email && "border-red-500 focus:border-red-500 focus:ring-red-500"
-          )}
-          placeholder="Enter your email address"
-        />
-        {errors.email && (
-          <p className="text-sm text-red-600">{errors.email}</p>
-        )}
-      </div>
-
-      {/* Company */}
-      <div className="space-y-2">
-        <Label htmlFor="company">Company Name *</Label>
-        <Input
-          id="company"
-          type="text"
-          value={formData.company}
-          onChange={(e) => handleInputChange("company", e.target.value)}
-          className={cn(
-            errors.company && "border-red-500 focus:border-red-500 focus:ring-red-500"
-          )}
-          placeholder="Enter your company name"
-        />
-        {errors.company && (
-          <p className="text-sm text-red-600">{errors.company}</p>
-        )}
-      </div>
-
-      {/* Password */}
-      <div className="space-y-2">
-        <Label htmlFor="password">Password *</Label>
-        <div className="relative">
-          <Input
-            id="password"
-            type={showPassword ? "text" : "password"}
-            value={formData.password}
-            onChange={(e) => handleInputChange("password", e.target.value)}
-            className={cn(
-              "pr-10",
-              errors.password && "border-red-500 focus:border-red-500 focus:ring-red-500"
-            )}
-            placeholder="Create a strong password"
-          />
-          <button
-            type="button"
-            onClick={() => setShowPassword(!showPassword)}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
-          >
-            {showPassword ? (
-              <EyeOff className="h-4 w-4" />
-            ) : (
-              <Eye className="h-4 w-4" />
-            )}
-          </button>
-        </div>
-        {errors.password && (
-          <p className="text-sm text-red-600">{errors.password}</p>
-        )}
-        <p className="text-xs text-slate-500">
-          Must be at least 8 characters with uppercase, lowercase, and number
-        </p>
-      </div>
-
-      {/* Confirm Password */}
-      <div className="space-y-2">
-        <Label htmlFor="confirmPassword">Confirm Password *</Label>
-        <div className="relative">
-          <Input
-            id="confirmPassword"
-            type={showConfirmPassword ? "text" : "password"}
-            value={formData.confirmPassword}
-            onChange={(e) => handleInputChange("confirmPassword", e.target.value)}
-            className={cn(
-              "pr-10",
-              errors.confirmPassword && "border-red-500 focus:border-red-500 focus:ring-red-500"
-            )}
-            placeholder="Confirm your password"
-          />
-          <button
-            type="button"
-            onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
-          >
-            {showConfirmPassword ? (
-              <EyeOff className="h-4 w-4" />
-            ) : (
-              <Eye className="h-4 w-4" />
-            )}
-          </button>
-        </div>
-        {errors.confirmPassword && (
-          <p className="text-sm text-red-600">{errors.confirmPassword}</p>
-        )}
-      </div>
-
-      {/* Checkboxes */}
-      <div className="space-y-4">
-        <div className="flex items-start space-x-3">
-          <Checkbox
-            id="agreeToTerms"
-            checked={formData.agreeToTerms}
-            onCheckedChange={(checked) => 
-              handleInputChange("agreeToTerms", checked as boolean)
-            }
-            className="mt-1"
-          />
-          <div className="space-y-1">
-            <Label htmlFor="agreeToTerms" className="text-sm">
-              I agree to the{" "}
-              <Link href="/terms" className="text-indigo-600 hover:text-indigo-500">
-                Terms of Service
-              </Link>{" "}
-              and{" "}
-              <Link href="/privacy" className="text-indigo-600 hover:text-indigo-500">
-                Privacy Policy
-              </Link>{" "}
-              *
-            </Label>
-            {errors.agreeToTerms && (
-              <p className="text-sm text-red-600">{errors.agreeToTerms}</p>
-            )}
-          </div>
-        </div>
-
-        <div className="flex items-start space-x-3">
-          <Checkbox
-            id="agreeToMarketing"
-            checked={formData.agreeToMarketing}
-            onCheckedChange={(checked) => 
-              handleInputChange("agreeToMarketing", checked as boolean)
-            }
-            className="mt-1"
-          />
-          <Label htmlFor="agreeToMarketing" className="text-sm">
-            I agree to receive marketing communications from US Associate
-          </Label>
-        </div>
-      </div>
-
-      {/* Submit Button */}
+      {/* Google Sign Up Button */}
       <Button
-        type="submit"
+        type="button"
+        variant="outline"
         size="lg"
-        disabled={isLoading}
-        className="w-full bg-indigo-600 hover:bg-indigo-700"
+        onClick={handleGoogleSignUp}
+        disabled={isGoogleLoading}
+        className="w-full"
       >
-        {isLoading ? (
+        {isGoogleLoading ? (
           <>
-            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            Creating Account...
+            <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
+            Connecting to Google...
           </>
         ) : (
           <>
-            Start Free Trial
-            <ArrowRight className="ml-2 h-4 w-4" />
+            <Icons.google className="mr-2 h-4 w-4" />
+            Continue with Google
           </>
         )}
       </Button>
 
-      {/* Login Link */}
-      <p className="text-center text-sm text-slate-600">
-        Already have an account?{" "}
-        <Link href="/login" className="text-indigo-600 hover:text-indigo-500">
-          Sign in here
-        </Link>
-      </p>
-    </form>
+      <div className="relative my-4">
+        <div className="absolute inset-0 flex items-center">
+          <Separator />
+        </div>
+        <div className="relative flex justify-center text-xs uppercase">
+          <span className="bg-background px-2 text-muted-foreground">Or sign up with email</span>
+        </div>
+      </div>
+
+      <form onSubmit={handleSubmit} className="space-y-6">
+        {/* Name Fields */}
+        <div className="grid gap-4 sm:grid-cols-2">
+          <div className="space-y-2">
+            <Label htmlFor="firstName">First Name *</Label>
+            <Input
+              id="firstName"
+              type="text"
+              value={formData.firstName}
+              onChange={(e) => handleInputChange("firstName", e.target.value)}
+              className={cn(
+                errors.firstName && "border-red-500 focus:border-red-500 focus:ring-red-500"
+              )}
+              placeholder="Enter your first name"
+              disabled={isGoogleLoading}
+            />
+            {errors.firstName && (
+              <p className="text-sm text-red-600">{errors.firstName}</p>
+            )}
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="lastName">Last Name *</Label>
+            <Input
+              id="lastName"
+              type="text"
+              value={formData.lastName}
+              onChange={(e) => handleInputChange("lastName", e.target.value)}
+              className={cn(
+                errors.lastName && "border-red-500 focus:border-red-500 focus:ring-red-500"
+              )}
+              placeholder="Enter your last name"
+              disabled={isGoogleLoading}
+            />
+            {errors.lastName && (
+              <p className="text-sm text-red-600">{errors.lastName}</p>
+            )}
+          </div>
+        </div>
+
+        {/* Email */}
+        <div className="space-y-2">
+          <Label htmlFor="email">Email Address *</Label>
+          <Input
+            id="email"
+            type="email"
+            value={formData.email}
+            onChange={(e) => handleInputChange("email", e.target.value)}
+            className={cn(
+              errors.email && "border-red-500 focus:border-red-500 focus:ring-red-500"
+            )}
+            placeholder="Enter your email address"
+            disabled={isGoogleLoading}
+          />
+          {errors.email && (
+            <p className="text-sm text-red-600">{errors.email}</p>
+          )}
+        </div>
+
+        {/* Company */}
+        <div className="space-y-2">
+          <Label htmlFor="company">Company Name *</Label>
+          <Input
+            id="company"
+            type="text"
+            value={formData.company}
+            onChange={(e) => handleInputChange("company", e.target.value)}
+            className={cn(
+              errors.company && "border-red-500 focus:border-red-500 focus:ring-red-500"
+            )}
+            placeholder="Enter your company name"
+            disabled={isGoogleLoading}
+          />
+          {errors.company && (
+            <p className="text-sm text-red-600">{errors.company}</p>
+          )}
+        </div>
+
+        {/* Password */}
+        <div className="space-y-2">
+          <Label htmlFor="password">Password *</Label>
+          <div className="relative">
+            <Input
+              id="password"
+              type={showPassword ? "text" : "password"}
+              value={formData.password}
+              onChange={(e) => handleInputChange("password", e.target.value)}
+              className={cn(
+                "pr-10",
+                errors.password && "border-red-500 focus:border-red-500 focus:ring-red-500"
+              )}
+              placeholder="Create a strong password"
+              disabled={isGoogleLoading}
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+            >
+              {showPassword ? (
+                <EyeOff className="h-4 w-4" />
+              ) : (
+                <Eye className="h-4 w-4" />
+              )}
+            </button>
+          </div>
+          {errors.password && (
+            <p className="text-sm text-red-600">{errors.password}</p>
+          )}
+          <p className="text-xs text-slate-500">
+            Must be at least 8 characters with uppercase, lowercase, and number
+          </p>
+        </div>
+
+        {/* Confirm Password */}
+        <div className="space-y-2">
+          <Label htmlFor="confirmPassword">Confirm Password *</Label>
+          <div className="relative">
+            <Input
+              id="confirmPassword"
+              type={showConfirmPassword ? "text" : "password"}
+              value={formData.confirmPassword}
+              onChange={(e) => handleInputChange("confirmPassword", e.target.value)}
+              className={cn(
+                "pr-10",
+                errors.confirmPassword && "border-red-500 focus:border-red-500 focus:ring-red-500"
+              )}
+              placeholder="Confirm your password"
+              disabled={isGoogleLoading}
+            />
+            <button
+              type="button"
+              onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+            >
+              {showConfirmPassword ? (
+                <EyeOff className="h-4 w-4" />
+              ) : (
+                <Eye className="h-4 w-4" />
+              )}
+            </button>
+          </div>
+          {errors.confirmPassword && (
+            <p className="text-sm text-red-600">{errors.confirmPassword}</p>
+          )}
+        </div>
+
+        {/* Checkboxes */}
+        <div className="space-y-4">
+          <div className="flex items-start space-x-3">
+            <Checkbox
+              id="agreeToTerms"
+              checked={formData.agreeToTerms}
+              onCheckedChange={(checked) => 
+                handleInputChange("agreeToTerms", checked as boolean)
+              }
+              className="mt-1"
+              disabled={isGoogleLoading}
+            />
+            <div className="space-y-1">
+              <Label htmlFor="agreeToTerms" className="text-sm">
+                I agree to the{" "}
+                <Link href="/terms" className="text-indigo-600 hover:text-indigo-500">
+                  Terms of Service
+                </Link>{" "}
+                and{" "}
+                <Link href="/privacy" className="text-indigo-600 hover:text-indigo-500">
+                  Privacy Policy
+                </Link>{" "}
+                *
+              </Label>
+              {errors.agreeToTerms && (
+                <p className="text-sm text-red-600">{errors.agreeToTerms}</p>
+              )}
+            </div>
+          </div>
+
+          <div className="flex items-start space-x-3">
+            <Checkbox
+              id="agreeToMarketing"
+              checked={formData.agreeToMarketing}
+              onCheckedChange={(checked) => 
+                handleInputChange("agreeToMarketing", checked as boolean)
+              }
+              className="mt-1"
+              disabled={isGoogleLoading}
+            />
+            <Label htmlFor="agreeToMarketing" className="text-sm">
+              I agree to receive marketing communications from US Associate
+            </Label>
+          </div>
+        </div>
+
+        {/* Submit Button */}
+        <Button
+          type="submit"
+          size="lg"
+          disabled={isLoading || isGoogleLoading}
+          className="w-full bg-indigo-600 hover:bg-indigo-700"
+        >
+          {isLoading ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              Creating Account...
+            </>
+          ) : (
+            <>
+              Start Free Trial
+              <ArrowRight className="ml-2 h-4 w-4" />
+            </>
+          )}
+        </Button>
+
+        {/* Login Link */}
+        <p className="text-center text-sm text-slate-600">
+          Already have an account?{" "}
+          <Link href="/login" className="text-indigo-600 hover:text-indigo-500">
+            Sign in here
+          </Link>
+        </p>
+      </form>
+    </div>
   )
 }

@@ -1,181 +1,337 @@
-# US Trade Association Management Platform
+# US Trade SaaS - Complete Trade Association Management Platform
 
-A modern SaaS platform designed for US trade associations, providing essential tools for member management, event organization, and communication.
+A comprehensive, production-ready SaaS platform for trade associations, chambers of commerce, and professional organizations. Built with Next.js 14, TypeScript, Tailwind CSS, and Supabase.
 
-## Features
+## 🚀 Features
 
-### Core Functionality
-- **Member Management**
-  - Member directory with advanced filtering
-  - Role-based access control
-  - Member status tracking
-  - CSV import/export capabilities
+### 🏢 **Trade Association Mode**
+- **Member Management**: Complete member lifecycle, profiles, and insights
+- **Event Management**: Conferences, workshops, webinars with registration
+- **Certification Tracking**: Professional development and credential management
+- **Committee Management**: Organizational structure and collaboration
+- **Legislative Monitoring**: Policy tracking and advocacy tools
 
-- **Organization Management**
-  - Organization profile management
-  - Multi-tenant architecture
-  - Address and contact information management
-  - Billing email configuration
+### 💼 **CRM Mode**
+- **Lead Management**: Full sales pipeline with scoring and qualification
+- **Deal Pipeline**: Opportunity tracking and revenue forecasting
+- **Property Management**: Real estate listings and facility management
+- **Task Management**: Project tracking with dependencies and assignments
+- **Contact Management**: Comprehensive relationship management
 
-- **Event Management**
-  - Event creation and scheduling
-  - Registration handling
-  - Payment processing
-  - Attendee management
+### 🔧 **Core Platform Features**
+- **Multi-tenant Architecture**: Complete data isolation between organizations
+- **Real-time Updates**: Live data synchronization across all components
+- **Advanced Analytics**: Custom dashboards and KPI tracking
+- **Email Campaigns**: Template-based communication with tracking
+- **Role-based Access Control**: Granular permissions and security
+- **Mobile Responsive**: Optimized for all devices
 
-- **Communication System**
-  - Email template management
-  - Member grouping
-  - Announcement broadcasts
-  - Email tracking
+## 🛠️ Tech Stack
 
-### Technical Features
-- Modern, responsive UI built with Next.js 14 and Tailwind CSS
-- Type-safe development with TypeScript
-- Real-time data management with Tanstack Query
-- Form handling with React Hook Form and Zod validation
-- Secure authentication with Supabase
-- Payment processing with Stripe
-- Email communications with SendGrid
+- **Frontend**: Next.js 14, React 18, TypeScript
+- **Styling**: Tailwind CSS, Radix UI Components
+- **Backend**: Supabase (PostgreSQL + Auth + Real-time)
+- **State Management**: Zustand, React Query
+- **Forms**: React Hook Form + Zod validation
+- **Charts**: Recharts for data visualization
+- **Authentication**: Supabase Auth with Google OAuth
 
-## Tech Stack
+## 📋 Prerequisites
 
-### Frontend
-- Next.js 14+ with App Router
-- TypeScript
-- Tailwind CSS
-- shadcn/ui components
-- Lucide Icons
-- Tanstack Query v5
-- Zustand
-- React Hook Form v7
-- Zod
+- Node.js 18+ and npm
+- Supabase account and project
+- Google OAuth credentials (optional)
 
-### Backend
-- Supabase (Database & Authentication)
-- Next.js API Routes
-- Stripe Integration
-- SendGrid Integration
+## 🚀 Quick Start
 
-## Getting Started
+### 1. Clone and Install
 
-### Prerequisites
-- Node.js 18.17 or later
-- npm or yarn
-- Supabase account
-- Stripe account
-- SendGrid account
-
-### Installation
-
-1. Clone the repository:
-\`\`\`bash
-git clone [repository-url]
+```bash
+git clone <repository-url>
 cd us-trade-saas
-\`\`\`
-
-2. Install dependencies:
-\`\`\`bash
 npm install
-\`\`\`
+```
 
-3. Set up environment variables:
-Create a \`.env.local\` file in the root directory with the following variables:
-\`\`\`env
-# App
-NEXT_PUBLIC_APP_URL=http://localhost:3000
+### 2. Environment Setup
 
-# Supabase
-NEXT_PUBLIC_SUPABASE_URL=your-supabase-url
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your-supabase-anon-key
-SUPABASE_SERVICE_ROLE_KEY=your-supabase-service-role-key
+Create a `.env.local` file in the root directory:
 
-# Stripe
-NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=your-stripe-publishable-key
-STRIPE_SECRET_KEY=your-stripe-secret-key
-STRIPE_WEBHOOK_SECRET=your-stripe-webhook-secret
+```bash
+# Supabase Configuration
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_url_here
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key_here
+SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key_here
 
-# SendGrid
-SENDGRID_API_KEY=your-sendgrid-api-key
-SENDGRID_FROM_EMAIL=your-verified-sender-email
-\`\`\`
+# Next.js Configuration
+NEXTAUTH_SECRET=your_nextauth_secret_here
+NEXTAUTH_URL=http://localhost:3000
 
-4. Run the development server:
-\`\`\`bash
+# Stripe Configuration (optional)
+NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_your_publishable_key_here
+STRIPE_SECRET_KEY=sk_test_your_secret_key_here
+STRIPE_WEBHOOK_SECRET=whsec_your_webhook_secret_here
+```
+
+### 3. Database Setup
+
+1. Go to your Supabase project dashboard
+2. Navigate to SQL Editor
+3. Copy and paste the contents of `database-setup.sql`
+4. Run the script to create all tables, functions, and sample data
+
+### 4. Start Development
+
+```bash
 npm run dev
-\`\`\`
+```
 
-The application will be available at \`http://localhost:3000\`.
+Visit `http://localhost:3000` to see your application!
 
-## Project Structure
+## 🗄️ Database Schema
 
-\`\`\`
-src/
-├── app/                    # Next.js app directory
-│   ├── (auth)/            # Authentication routes
-│   ├── (dashboard)/       # Dashboard routes
-│   └── api/               # API routes
-├── components/            # React components
-│   ├── auth/             # Authentication components
-│   ├── dashboard/        # Dashboard components
-│   ├── events/           # Event management components
-│   ├── members/          # Member management components
-│   ├── shared/           # Shared components
-│   └── ui/               # UI components (shadcn/ui)
-├── lib/                  # Utility functions and hooks
-│   ├── hooks/           # Custom React hooks
-│   ├── store/           # Zustand store
-│   ├── utils/           # Utility functions
-│   └── validations/     # Zod schemas
-├── types/               # TypeScript types
-└── styles/              # Global styles
-\`\`\`
+The platform uses a comprehensive, multi-tenant database design:
 
-## Development
+### Core Tables
+- **organizations**: Multi-tenant organization data
+- **user_settings**: User preferences and mode settings
+- **profiles**: Extended user profiles with organization context
 
-### Code Style
-- Use TypeScript for all files
-- Follow ESLint and Prettier configurations
-- Use named exports for components
-- Implement proper error handling
-- Add JSDoc comments for complex functions
+### Event Management
+- **events**: Conference, workshop, and networking events
+- **event_registrations**: Attendee management and tracking
+- **speakers**: Speaker profiles and session assignments
+- **event_speakers**: Many-to-many event-speaker relationships
 
-### Component Guidelines
-- Use shadcn/ui components for consistency
-- Implement proper loading states
-- Handle error states gracefully
-- Make components responsive
-- Follow accessibility guidelines
+### CRM Functionality
+- **contacts**: Customer and prospect management
+- **leads**: Lead scoring and qualification
+- **deals**: Sales pipeline and opportunity tracking
+- **properties**: Real estate and facility management
+- **tasks**: Project and task management
 
-### State Management
-- Use Zustand for global state
-- Use Tanstack Query for server state
-- Implement proper caching strategies
-- Handle loading and error states
+### Communication
+- **email_templates**: Reusable email templates with variables
+- **email_campaigns**: Campaign creation and tracking
+- **notifications**: In-app notification system
+- **message_templates**: Multi-channel communication templates
 
-## Testing
+### Analytics & Reporting
+- **page_views**: User behavior tracking
+- **user_sessions**: Session analytics
+- **dashboard_widgets**: Custom dashboard configurations
 
-- Unit tests with Jest
-- Integration tests with React Testing Library
-- E2E tests with Playwright
-- API tests with Supertest
+## 🔐 Authentication & Security
 
-## Deployment
+### Multi-tenant Architecture
+- Complete data isolation between organizations
+- Row Level Security (RLS) on all tables
+- Organization-based access control
 
-The application is configured for deployment on Vercel:
+### User Roles & Permissions
+- **Admin**: Full system access and user management
+- **Manager**: Team and project oversight
+- **Member**: Standard user access
+- **Viewer**: Read-only access
 
-1. Connect your repository to Vercel
-2. Configure environment variables
-3. Deploy the application
+### Security Features
+- Supabase Auth with secure session management
+- Google OAuth integration
+- Password reset and account recovery
+- Session timeout and security policies
 
-## Contributing
+## 📊 Real-time Features
+
+### Live Data Updates
+- Real-time dashboard updates
+- Live notifications and alerts
+- Collaborative editing capabilities
+- Instant chat and messaging
+
+### WebSocket Integration
+- Supabase real-time subscriptions
+- Live event updates
+- Real-time collaboration tools
+- Instant data synchronization
+
+## 🎨 Customization & Theming
+
+### Theme System
+- Light, dark, and system theme support
+- Customizable color schemes
+- Brand-specific styling options
+- Responsive design for all devices
+
+### Dashboard Customization
+- Drag-and-drop widget placement
+- Custom KPI definitions
+- Personalized dashboard layouts
+- Role-based dashboard views
+
+## 📈 Analytics & Reporting
+
+### Built-in Analytics
+- User engagement tracking
+- Event performance metrics
+- Lead conversion analytics
+- Revenue and growth tracking
+
+### Custom Reports
+- Configurable report builder
+- Export to PDF/Excel
+- Scheduled report delivery
+- Interactive data visualization
+
+## 🔌 API & Integrations
+
+### RESTful API
+- Complete CRUD operations
+- Filtering and pagination
+- Bulk operations support
+- Rate limiting and throttling
+
+### Third-party Integrations
+- Google OAuth authentication
+- Stripe payment processing
+- Email service providers
+- Calendar integrations
+
+## 🚀 Deployment
+
+### Vercel Deployment
+```bash
+npm run build
+vercel --prod
+```
+
+### Environment Variables
+Ensure all environment variables are set in your production environment.
+
+### Database Migrations
+Use the provided SQL scripts for database setup and migrations.
+
+## 🧪 Testing
+
+### Development Testing
+```bash
+npm run lint
+npm run type-check
+```
+
+### Component Testing
+The platform includes comprehensive component testing with React Testing Library.
+
+## 📚 API Documentation
+
+### Service Layer
+All backend functionality is organized into service modules:
+
+- **`/services/auth.ts`**: Authentication and user management
+- **`/services/events.ts`**: Event management and registration
+- **`/services/crm.ts`**: CRM functionality and sales pipeline
+- **`/services/members.ts`**: Member management and insights
+- **`/services/communications.ts`**: Email campaigns and notifications
+
+### Usage Examples
+
+```typescript
+// Get all events for the organization
+import { eventsService } from '@/services/events'
+const events = await eventsService.getEvents()
+
+// Create a new contact
+import { contactsService } from '@/services/crm'
+const contact = await contactsService.createContact({
+  first_name: 'John',
+  last_name: 'Doe',
+  email: 'john@example.com',
+  company: 'Example Corp'
+})
+
+// Get member statistics
+import { membersService } from '@/services/members'
+const stats = await membersService.getMemberStatistics()
+```
+
+## 🔧 Configuration
+
+### Supabase Setup
+1. Create a new Supabase project
+2. Enable Row Level Security (RLS)
+3. Configure authentication providers
+4. Set up storage buckets for file uploads
+
+### Google OAuth
+1. Create OAuth 2.0 credentials in Google Console
+2. Add authorized redirect URIs
+3. Configure Supabase Auth settings
+
+### Stripe Integration
+1. Set up Stripe account and API keys
+2. Configure webhook endpoints
+3. Set up product and pricing plans
+
+## 📱 Mobile & Responsiveness
+
+- Fully responsive design
+- Mobile-first approach
+- Touch-friendly interfaces
+- Progressive Web App (PWA) ready
+
+## 🔍 Performance Optimization
+
+- Server-side rendering (SSR)
+- Static generation where possible
+- Image optimization
+- Code splitting and lazy loading
+- Efficient data fetching with React Query
+
+## 🛡️ Security Best Practices
+
+- Input validation and sanitization
+- SQL injection prevention
+- XSS protection
+- CSRF token implementation
+- Secure HTTP headers
+
+## 📊 Monitoring & Logging
+
+- Comprehensive error logging
+- Performance monitoring
+- User activity tracking
+- System health checks
+
+## 🤝 Contributing
 
 1. Fork the repository
 2. Create a feature branch
-3. Commit your changes
-4. Push to the branch
-5. Create a Pull Request
+3. Make your changes
+4. Add tests if applicable
+5. Submit a pull request
 
-## License
+## 📄 License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+This project is licensed under the MIT License.
+
+## 🆘 Support
+
+For support and questions:
+- Check the documentation
+- Review the code examples
+- Open an issue on GitHub
+- Contact the development team
+
+## 🚀 Roadmap
+
+### Upcoming Features
+- Advanced reporting engine
+- Mobile app development
+- AI-powered insights
+- Advanced workflow automation
+- Multi-language support
+- Advanced analytics dashboard
+
+---
+
+**Built with ❤️ for trade associations and professional organizations**
+
+Transform your organization's digital presence with this comprehensive, enterprise-ready platform.

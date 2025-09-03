@@ -31,7 +31,10 @@
 -- Step 9: Create RLS policies (after all tables are created)
 \i '08_create_rls_policies.sql'
 
--- Step 10: Insert sample data (optional)
+-- Step 10: Add missing tables and columns
+\i '12_missing_tables.sql'
+
+-- Step 11: Insert sample data (optional)
 \i '10_create_sample_data.sql'
 
 -- =====================================================
@@ -41,6 +44,7 @@
 -- ✅ All tables created with proper relationships
 -- ✅ Row Level Security (RLS) policies enabled
 -- ✅ Utility functions and triggers for automation
+-- ✅ Missing tables and columns added
 -- ✅ Sample data for testing
 -- ✅ Multi-tenant architecture ready
 -- ✅ Google Auth integration ready
